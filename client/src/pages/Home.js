@@ -1,23 +1,24 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Container, Col, Row } from "react-bootstrap";
+import { Container, Col, Row, Button } from "react-bootstrap";
 import PokemonCard from "../components/PokemonCard";
 
 function Home() {
   const [pokemonList, setPokemonList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
+  const [offset, setOffset] = useState(0)
 
   useEffect(() => {
     async function fetchData() {
       try {
         const response = await axios.get(
-          "https://pokeapi.co/api/v2/pokemon?limit=8&offset=0"
+          `https://pokeapi.co/api/v2/pokemon?limit=8&offset=${offset}`
         );
 
         response.data.results.forEach(async (pokemon) => {
           const result = await axios.get(pokemon.url);
-        //   console.log(result.data);
+          console.log(result.data);
           setPokemonList((oldPokemonList) => [...oldPokemonList, result.data]);
           setLoading(false);
         });
@@ -30,7 +31,12 @@ function Home() {
     fetchData();
 
     // console.log(pokemonList);
-  }, []);
+  }, [offset]);
+
+  const handleNext = () => {
+    //   console.log('next lakukan');
+      setOffset(offset + 8)
+  }
 
   if (loading) {
     return <h3>Loading...</h3>;
@@ -50,6 +56,9 @@ function Home() {
           </Col>
         ))}
       </Row>
+      <Button className="my-4" onClick={handleNext} variant="primary">
+        Show next
+      </Button>
     </Container>
   );
 }
