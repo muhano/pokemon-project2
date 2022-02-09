@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
+import { Container, Col, Row } from "react-bootstrap";
+import PokemonCard from "../components/PokemonCard";
 
 function Home() {
   const [pokemonList, setPokemonList] = useState([]);
@@ -13,21 +14,17 @@ function Home() {
         const response = await axios.get(
           "https://pokeapi.co/api/v2/pokemon?limit=8&offset=0"
         );
-        // console.log(response.data, "<-------");
-        // if (response) {
-        //   // setLoading(false)
-        //   setPokemonList(response.data);
-        //   setLoading(false);
-        // }
+
         response.data.results.forEach(async (pokemon) => {
-            const result = await axios.get(pokemon.url)
-            console.log(result.data);
-            setPokemonList(oldPokemonList => [...oldPokemonList, result.data])
-            setLoading(false)
-        })
+          const result = await axios.get(pokemon.url);
+        //   console.log(result.data);
+          setPokemonList((oldPokemonList) => [...oldPokemonList, result.data]);
+          setLoading(false);
+        });
       } catch (err) {
         console.log(err);
         setError(err);
+        setLoading(false)
       }
     }
     fetchData();
@@ -46,12 +43,13 @@ function Home() {
   return (
     <Container>
       <h1>Pokedex</h1>
-      {pokemonList.map((pokemon) => (
-        <div key={pokemon.id}>
-            <img src={pokemon.sprites.other['official-artwork'].front_default} alt="Italian Trulli"></img>
-          <p >{pokemon.name}</p>
-        </div>
-      ))}
+      <Row>
+        {pokemonList.map((pokemon) => (
+          <Col key={pokemon.id} xs={6} className="mt-3">
+            <PokemonCard pokemon={pokemon} />
+          </Col>
+        ))}
+      </Row>
     </Container>
   );
 }
